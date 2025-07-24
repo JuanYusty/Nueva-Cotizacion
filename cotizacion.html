@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotización  - Industrias Colres</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .area-btn {
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        .area-btn.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .campo-dinamico {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .descripcion-area {
+            font-weight: bold;
+            color: #0d6efd;
+            margin: 15px 0;
+        }
+        .tabla-items th {
+            background-color: #f8f9fa;
+            white-space: nowrap;
+        }
+        .resumen-totales {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .form-control-sm {
+            min-width: 80px;
+        }
+        .campo-aditamentos {
+            margin-top: 15px;
+        }
+        .datos-cliente {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #bb2d3b;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <form>
+            <!-- Encabezado -->
+            <div class="text-center mb-4">
+                <img src="data:image/png;base64,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" alt="Industrias Colres" style="max-height:100px" class="mb-3">
+                <h2>COTIZACIÓN </h2>
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">No.</span>
+                            <input type="text" class="form-control" name="numero_cotizacion" required>
+                            <span class="input-group-text">Fecha:</span>
+                            <input type="date" class="form-control" name="fecha_cotizacion" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datos del Cliente -->
+            <div class="datos-cliente">
+                <h4 class="text-center mb-3">DATOS DEL CLIENTE</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nombre/Razón Social</label>
+                        <input type="text" class="form-control" name="cliente_nombre" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">NIT/CC</label>
+                        <input type="text" class="form-control" name="cliente_nit" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" name="cliente_telefono" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-control" name="cliente_direccion" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Ciudad</label>
+                        <input type="text" class="form-control" name="cliente_ciudad" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Contacto</label>
+                        <input type="text" class="form-control" name="cliente_contacto">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="cliente_email">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Vendedor</label>
+                    <input type="text" class="form-control" name="vendedor" required>
+                </div>
+            </div>
+
+            <!-- Selección de Área -->
+            <div class="border p-3 mb-4 rounded">
+                <h5 class="text-center mb-3">SELECCIONE EL TIPO DE PRODUCTO/SERVICIO</h5>
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 area-btn" data-area="cartucho">
+                            R. Cartucho
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 area-btn" data-area="abrazadera">
+                            R. Abrazadera
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 area-btn" data-area="tubular">
+                            R. Tubular
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 area-btn" data-area="electronica">
+                            Electrónica
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 area-btn" data-area="proyectos">
+                            Proyectos
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 area-btn" data-area="repuestos">
+                            Repuestos
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 area-btn" data-area="especiales">
+                            Especiales
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campos Dinámicos -->
+            <div id="campos-dinamicos">
+                <!-- Resistencia Cartucho -->
+                <div id="cartucho" class="campo-dinamico border p-3 mb-3 rounded">
+                    <h5 class="descripcion-area">RESISTENCIA CARTUCHO</h5>
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Diámetro (Ø mm)</label>
+                            <input type="number" class="form-control" name="cartucho_diametro" min="1" step="0.01" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Longitud (mm)</label>
+                            <input type="number" class="form-control" name="cartucho_longitud" min="1" step="0.01" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Voltios (V)</label>
+                            <input type="number" class="form-control" name="cartucho_voltios" min="1" step="0.1" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Wattios (W)</label>
+                            <input type="number" class="form-control" name="cartucho_wattios" min="1" step="1" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Long. Cable (mm)</label>
+                            <input type="number" class="form-control" name="cartucho_cable" min="0" step="1">
+                        </div>
+                    </div>
+                    <div class="campo-aditamentos">
+                        <label class="form-label">Aditamentos</label>
+                        <input type="text" class="form-control" name="cartucho_aditamentos" placeholder="Especificar aditamentos si aplica">
+                    </div>
+                </div>
+
+                <!-- Resistencia Abrazadera -->
+                <div id="abrazadera" class="campo-dinamico border p-3 mb-3 rounded">
+                    <h5 class="descripcion-area">RESISTENCIA ABRAZADERA</h5>
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Diámetro (Ø mm)</label>
+                            <input type="number" class="form-control" name="abrazadera_diametro" min="1" step="0.01" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Longitud (mm)</label>
+                            <input type="number" class="form-control" name="abrazadera_longitud" min="1" step="0.01" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Voltios (V)</label>
+                            <input type="number" class="form-control" name="abrazadera_voltios" min="1" step="0.1" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Wattios (W)</label>
+                            <input type="number" class="form-control" name="abrazadera_wattios" min="1" step="1" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Tipo Terminal</label>
+                            <select class="form-select" name="abrazadera_terminal">
+                                <option value="">Seleccionar</option>
+                                <option value="Cable">Cable</option>
+                                <option value="C. Enchufe">C. Enchufe</option>
+                                <option value="Tornillo">Tornillo</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Long. Cable (mm)</label>
+                            <input type="number" class="form-control" name="abrazadera_cable" min="0" step="1">
+                        </div>
+                    </div>
+                    <div class="campo-aditamentos">
+                        <label class="form-label">Aditamentos</label>
+                        <input type="text" class="form-control" name="abrazadera_aditamentos" placeholder="Especificar aditamentos si aplica">
+                    </div>
+                </div>
+
+                <!-- Resistencia Tubular -->
+                <div id="tubular" class="campo-dinamico border p-3 mb-3 rounded">
+                    <h5 class="descripcion-area">RESISTENCIA TUBULAR</h5>
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Diámetro (Ø mm)</label>
+                            <input type="number" class="form-control" name="tubular_diametro" min="1" step="0.01" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Longitud (mm)</label>
+                            <input type="number" class="form-control" name="tubular_longitud" min="1" step="0.01" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Voltios (V)</label>
+                            <input type="number" class="form-control" name="tubular_voltios" min="1" step="0.1" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Wattios (W)</label>
+                            <input type="number" class="form-control" name="tubular_wattios" min="1" step="1" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Tipo Terminal</label>
+                            <select class="form-select" name="tubular_terminal">
+                                <option value="">Seleccionar</option>
+                                <option value="Cable">Cable</option>
+                                <option value="Tornillo">Tornillo</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">N° Elementos</label>
+                            <input type="number" class="form-control" name="tubular_elementos" min="1" step="1" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Long. Cable (mm)</label>
+                            <input type="number" class="form-control" name="tubular_cable" min="0" step="1">
+                        </div>
+                    </div>
+                    <div class="campo-aditamentos">
+                        <label class="form-label">Aditamentos</label>
+                        <input type="text" class="form-control" name="tubular_aditamentos" placeholder="Especificar aditamentos si aplica">
+                    </div>
+                </div>
+
+                <!-- Electrónica -->
+                <div id="electronica" class="campo-dinamico border p-3 mb-3 rounded">
+                    <h5 class="descripcion-area">ELECTRÓNICA</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" name="electronica_descripcion" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Diámetro (Ø mm)</label>
+                            <input type="number" class="form-control" name="electronica_diametro" min="0" step="0.01">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Longitud (mm)</label>
+                            <input type="number" class="form-control" name="electronica_longitud" min="0" step="0.01">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Long. Cable (mm)</label>
+                            <input type="number" class="form-control" name="electronica_cable" min="0" step="1">
+                        </div>
+                    </div>
+                    <div class="campo-aditamentos">
+                        <label class="form-label">Aditamentos</label>
+                        <input type="text" class="form-control" name="electronica_aditamentos" placeholder="Especificar aditamentos si aplica">
+                    </div>
+                </div>
+
+                <!-- Proyectos -->
+                <div id="proyectos" class="campo-dinamico border p-3 mb-3 rounded">
+                    <h5 class="descripcion-area">PROYECTOS</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Proyecto</label>
+                        <select class="form-select mb-3" name="proyectos_tipo">
+                            <option value="">Seleccionar tipo</option>
+                            <option value="Diseño">Diseño</option>
+                            <option value="Instalación">Instalación</option>
+                            <option value="Mantenimiento">Mantenimiento</option>
+                            <option value="Reparación">Reparación</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <label class="form-label">Descripción Detallada</label>
+                        <textarea class="form-control" name="proyectos_descripcion" rows="5" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Repuestos -->
+                <div id="repuestos" class="campo-dinamico border p-3 mb-3 rounded">
+                    <h5 class="descripcion-area">REPUESTOS</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Repuesto</label>
+                        <input type="text" class="form-control" name="repuestos_tipo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" name="repuestos_descripcion" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <!-- Especiales -->
+                <div id="especiales" class="campo-dinamico border p-3 mb-3 rounded">
+                    <h5 class="descripcion-area">ESPECIALES</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Especial</label>
+                        <input type="text" class="form-control" name="especiales_tipo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" name="especiales_descripcion" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón para agregar a la cotización -->
+            <div class="text-end mb-3">
+                <button type="button" class="btn btn-success" id="agregar-item">
+                    <i class="bi bi-plus-circle"></i> Agregar a Cotización
+                </button>
+            </div>
+
+            <!-- Tabla de Ítems -->
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered tabla-items" id="tabla-cotizacion">
+                    <thead>
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="40%">Descripción</th>
+                            <th width="10%">Unidades</th>
+                            <th width="15%">V. Unitario</th>
+                            <th width="15%">V. Total</th>
+                            <th width="15%">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los ítems se agregarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Resumen de Totales -->
+            <div class="row resumen-totales">
+                <div class="col-md-6">
+                    <div class="mb-2">
+                        <label>Forma de Pago:</label>
+                        <input type="text" class="form-control" name="forma_pago" value="50% anticipo, 50% al finalizar">
+                    </div>
+                    <div class="mb-2">
+                        <label>Tiempo de Entrega:</label>
+                        <input type="text" class="form-control" name="tiempo_entrega" value="15 días hábiles">
+                    </div>
+                    <div class="mb-2">
+                        <label>Validez:</label>
+                        <input type="text" class="form-control" name="validez" value="30 días">
+                    </div>
+                    <div class="mb-2">
+                        <label>Notas:</label>
+                        <textarea class="form-control" name="notas" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-end">
+                        <h5>SUBTOTAL: $<span id="subtotal">0</span></h5>
+                        <h5>IVA (19%): $<span id="iva">0</span></h5>
+                        <h4>TOTAL: $<span id="total">0</span></h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones Finales -->
+            <!-- Modifica la sección de botones finales para incluir el nuevo botón -->
+           <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+            <button type="button" class="btn btn-danger" id="exportar-pdf">
+            <i class="bi bi-file-earmark-pdf"></i> Exportar a PDF
+            </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables globales
+        let contadorItems = 0;
+        let itemsCotizacion = [];
+
+        // Mostrar campos según área seleccionada
+        document.querySelectorAll('.area-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.area-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                document.querySelectorAll('.campo-dinamico').forEach(div => div.style.display = 'none');
+                
+                const area = this.getAttribute('data-area');
+                const campoDinamico = document.getElementById(area);
+                if (campoDinamico) {
+                    campoDinamico.style.display = 'block';
+                }
+            });
+        });
+
+        // Agregar ítem a la cotización
+        document.getElementById('agregar-item').addEventListener('click', function() {
+            const areaActiva = document.querySelector('.area-btn.active');
+            if (!areaActiva) {
+                alert('Por favor seleccione un tipo de producto/servicio primero');
+                return;
+            }
+            
+            const area = areaActiva.getAttribute('data-area');
+            const descripcion = generarDescripcion(area);
+            
+            if (!descripcion) {
+                alert('Por favor complete todos los campos requeridos');
+                return;
+            }
+
+            contadorItems++;
+            const nuevoItem = {
+                id: contadorItems,
+                descripcion: descripcion,
+                unidades: 1,
+                valorUnitario: 0,
+                valorTotal: 0
+            };
+
+            itemsCotizacion.push(nuevoItem);
+            actualizarTabla();
+            calcularTotales();
+        });
+
+        // Generar descripción según el área
+        function generarDescripcion(area) {
+            let descripcion = '';
+            
+            switch(area) {
+                case 'cartucho':
+                    const cartuchoDiametro = document.querySelector('[name="cartucho_diametro"]').value;
+                    const cartuchoLongitud = document.querySelector('[name="cartucho_longitud"]').value;
+                    const cartuchoVoltios = document.querySelector('[name="cartucho_voltios"]').value;
+                    const cartuchoWattios = document.querySelector('[name="cartucho_wattios"]').value;
+                    const cartuchoCable = document.querySelector('[name="cartucho_cable"]').value;
+                    const cartuchoAditamentos = document.querySelector('[name="cartucho_aditamentos"]').value;
+                    
+                    if (!cartuchoDiametro || !cartuchoLongitud || !cartuchoVoltios || !cartuchoWattios) return null;
+                    
+                    descripcion = `RESISTENCIA CARTUCHO: Ø${cartuchoDiametro}mm | ${cartuchoLongitud}mm | ${cartuchoVoltios}V | ${cartuchoWattios}W`;
+                    if (cartuchoCable) descripcion += ` | Cable:${cartuchoCable}mm`;
+                    if (cartuchoAditamentos) descripcion += ` | Adit: ${cartuchoAditamentos.substring(0, 20)}`;
+                    break;
+                    
+                case 'abrazadera':
+                    const abrazaderaDiametro = document.querySelector('[name="abrazadera_diametro"]').value;
+                    const abrazaderaLongitud = document.querySelector('[name="abrazadera_longitud"]').value;
+                    const abrazaderaVoltios = document.querySelector('[name="abrazadera_voltios"]').value;
+                    const abrazaderaWattios = document.querySelector('[name="abrazadera_wattios"]').value;
+                    const abrazaderaTerminal = document.querySelector('[name="abrazadera_terminal"]').value;
+                    const abrazaderaCable = document.querySelector('[name="abrazadera_cable"]').value;
+                    const abrazaderaAditamentos = document.querySelector('[name="abrazadera_aditamentos"]').value;
+                    
+                    if (!abrazaderaDiametro || !abrazaderaLongitud || !abrazaderaVoltios || !abrazaderaWattios) return null;
+                    
+                    descripcion = `RESISTENCIA ABRAZADERA: Ø${abrazaderaDiametro}mm | ${abrazaderaLongitud}mm | ${abrazaderaVoltios}V | ${abrazaderaWattios}W`;
+                    if (abrazaderaTerminal) descripcion += ` | Terminal: ${abrazaderaTerminal}`;
+                    if (abrazaderaCable) descripcion += ` | Cable:${abrazaderaCable}mm`;
+                    if (abrazaderaAditamentos) descripcion += ` | Adit: ${abrazaderaAditamentos.substring(0, 20)}`;
+                    break;
+                    
+                case 'tubular':
+                    const tubularDiametro = document.querySelector('[name="tubular_diametro"]').value;
+                    const tubularLongitud = document.querySelector('[name="tubular_longitud"]').value;
+                    const tubularVoltios = document.querySelector('[name="tubular_voltios"]').value;
+                    const tubularWattios = document.querySelector('[name="tubular_wattios"]').value;
+                    const tubularTerminal = document.querySelector('[name="tubular_terminal"]').value;
+                    const tubularElementos = document.querySelector('[name="tubular_elementos"]').value;
+                    const tubularCable = document.querySelector('[name="tubular_cable"]').value;
+                    const tubularAditamentos = document.querySelector('[name="tubular_aditamentos"]').value;
+                    
+                    if (!tubularDiametro || !tubularLongitud || !tubularVoltios || !tubularWattios || !tubularElementos) return null;
+                    
+                    descripcion = `RESISTENCIA TUBULAR: Ø${tubularDiametro}mm | ${tubularLongitud}mm | ${tubularVoltios}V | ${tubularWattios}W | ${tubularElementos} elem`;
+                    if (tubularTerminal) descripcion += ` | Terminal: ${tubularTerminal}`;
+                    if (tubularCable) descripcion += ` | Cable:${tubularCable}mm`;
+                    if (tubularAditamentos) descripcion += ` | Adit: ${tubularAditamentos.substring(0, 20)}`;
+                    break;
+                    
+                case 'electronica':
+                    const electronicaDesc = document.querySelector('[name="electronica_descripcion"]').value.trim();
+                    const electronicaDiametro = document.querySelector('[name="electronica_diametro"]').value;
+                    const electronicaLongitud = document.querySelector('[name="electronica_longitud"]').value;
+                    const electronicaCable = document.querySelector('[name="electronica_cable"]').value;
+                    const electronicaAditamentos = document.querySelector('[name="electronica_aditamentos"]').value;
+                    
+                    if (!electronicaDesc) return null;
+                    
+                    descripcion = `ELECTRÓNICA: ${electronicaDesc.substring(0, 60)}${electronicaDesc.length > 60 ? '...' : ''}`;
+                    if (electronicaDiametro) descripcion += ` | Ø${electronicaDiametro}mm`;
+                    if (electronicaLongitud) descripcion += ` | ${electronicaLongitud}mm`;
+                    if (electronicaCable) descripcion += ` | Cable:${electronicaCable}mm`;
+                    if (electronicaAditamentos) descripcion += ` | Adit: ${electronicaAditamentos.substring(0, 20)}`;
+                    break;
+                    
+                case 'proyectos':
+                    const proyectosTipo = document.querySelector('[name="proyectos_tipo"]').value;
+                    const proyectosDesc = document.querySelector('[name="proyectos_descripcion"]').value.trim();
+                    
+                    if (!proyectosDesc) return null;
+                    
+                    descripcion = `PROYECTO${proyectosTipo ? ` (${proyectosTipo})` : ''}: ${proyectosDesc.substring(0, 100)}${proyectosDesc.length > 100 ? '...' : ''}`;
+                    break;
+                    
+                case 'repuestos':
+                    const repuestosTipo = document.querySelector('[name="repuestos_tipo"]').value.trim();
+                    const repuestosDesc = document.querySelector('[name="repuestos_descripcion"]').value.trim();
+                    
+                    if (!repuestosTipo) return null;
+                    
+                    descripcion = `REPUESTO: ${repuestosTipo}`;
+                    if (repuestosDesc) descripcion += ` - ${repuestosDesc.substring(0, 80)}${repuestosDesc.length > 80 ? '...' : ''}`;
+                    break;
+                    
+                case 'especiales':
+                    const especialesTipo = document.querySelector('[name="especiales_tipo"]').value.trim();
+                    const especialesDesc = document.querySelector('[name="especiales_descripcion"]').value.trim();
+                    
+                    if (!especialesTipo) return null;
+                    
+                    descripcion = `ESPECIAL: ${especialesTipo}`;
+                    if (especialesDesc) descripcion += ` - ${especialesDesc.substring(0, 80)}${especialesDesc.length > 80 ? '...' : ''}`;
+                    break;
+            }
+
+            return descripcion;
+        }
+
+        // Actualizar tabla de ítems
+        function actualizarTabla() {
+            const tbody = document.querySelector('#tabla-cotizacion tbody');
+            tbody.innerHTML = '';
+
+            itemsCotizacion.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.descripcion}</td>
+                    <td><input type="number" class="form-control form-control-sm unidades" 
+                               value="${item.unidades}" min="1" data-id="${item.id}"></td>
+                    <td><input type="number" class="form-control form-control-sm valor-unitario" 
+                               value="${item.valorUnitario.toFixed(2)}" min="0" step="0.01" data-id="${item.id}"></td>
+                    <td class="valor-total">$${item.valorTotal.toFixed(2)}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger eliminar-item" data-id="${item.id}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Eventos para campos editables
+            document.querySelectorAll('.unidades').forEach(input => {
+                input.addEventListener('change', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const item = itemsCotizacion.find(i => i.id === id);
+                    if (item) {
+                        item.unidades = parseInt(this.value) || 1;
+                        item.valorTotal = item.unidades * item.valorUnitario;
+                        actualizarFila(item);
+                        calcularTotales();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.valor-unitario').forEach(input => {
+                input.addEventListener('change', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const item = itemsCotizacion.find(i => i.id === id);
+                    if (item) {
+                        item.valorUnitario = parseFloat(this.value) || 0;
+                        item.valorTotal = item.unidades * item.valorUnitario;
+                        actualizarFila(item);
+                        calcularTotales();
+                    }
+                });
+            });
+
+            // Eventos para botones eliminar
+            document.querySelectorAll('.eliminar-item').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    itemsCotizacion = itemsCotizacion.filter(i => i.id !== id);
+                    actualizarTabla();
+                    calcularTotales();
+                });
+            });
+        }
+
+        // Actualizar una fila específica
+        function actualizarFila(item) {
+            const fila = document.querySelector(`tr:has(.unidades[data-id="${item.id}"])`);
+            if (fila) {
+                const valorTotalCell = fila.querySelector('.valor-total');
+                if (valorTotalCell) {
+                    valorTotalCell.textContent = `$${item.valorTotal.toFixed(2)}`;
+                }
+            }
+        }
+
+        // Calcular totales
+        function calcularTotales() {
+            let subtotal = 0;
+            itemsCotizacion.forEach(item => {
+                subtotal += item.valorTotal;
+            });
+
+            const iva = subtotal * 0.19;
+            const total = subtotal + iva;
+
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('iva').textContent = iva.toFixed(2);
+            document.getElementById('total').textContent = total.toFixed(2);
+        }
+
+        // Seleccionar primera área por defecto
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.area-btn').click();
+            
+            // Establecer fecha actual por defecto
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelector('[name="fecha_cotizacion"]').value = today;
+        });
+
+        // ===================== FUNCIÓN PARA GENERAR PDF =====================
+document.getElementById('exportar-pdf').addEventListener('click', function() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // 1. Agregar logo (IMPORTANTE: Cambia 'logo_empresa.png' por tu imagen)
+    const logo = new Image();
+    logo.src = 'data:image/png;base64,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'; // Misma ruta que usas en el HTML
+    doc.addImage(logo, 'PNG', 1, 10, 80, 30); // (X, Y, ancho, alto)
+
+    // 2. Datos de TU EMPRESA (¡Personaliza esto!)
+    doc.setFontSize(12);
+    doc.setTextColor(13, 110, 253); // Azul
+    doc.text("INDUSTRIAS COLRES", 80, 15); // Nombre empresa
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0); // Negro
+    doc.text("NIT: 900229663", 80, 22); // Tu NIT real
+    doc.text("Dirección: Calle 22A # 8-47", 80, 29); // Tu dirección
+    doc.text("Teléfono: 3153748687", 80, 36); // Tu teléfono
+    doc.text("Email: colres@colres.com", 80, 43); // Tu email
+
+    // 3. Título y número de cotización
+    doc.setFontSize(16);
+    doc.setTextColor(13, 110, 253);
+    doc.text("COTIZACIÓN ", 105, 60, { align: 'center' });
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`No. ${document.querySelector('[name="numero_cotizacion"]').value}`, 15, 70);
+    doc.text(`Fecha: ${document.querySelector('[name="fecha_cotizacion"]').value}`, 15, 75);
+
+    // 4. Sección de DATOS DEL CLIENTE
+    doc.setFontSize(12);
+    doc.text("DATOS DEL CLIENTE", 15, 85);
+    doc.setFontSize(10);
+    const clienteY = [90, 95, 100, 105, 110]; // Posiciones Y para cada línea
+    doc.text(`Nombre: ${document.querySelector('[name="cliente_nombre"]').value}`, 15, clienteY[0]);
+    doc.text(`NIT/CC: ${document.querySelector('[name="cliente_nit"]').value}`, 15, clienteY[1]);
+    doc.text(`Dirección: ${document.querySelector('[name="cliente_direccion"]').value}`, 15, clienteY[2]);
+    doc.text(`Teléfono: ${document.querySelector('[name="cliente_telefono"]').value}`, 15, clienteY[3]);
+    doc.text(`Email: ${document.querySelector('[name="cliente_email"]').value || 'N/A'}`, 15, clienteY[4]);
+
+    // 5. Tabla de productos
+    doc.setFontSize(12);
+    doc.text("DETALLE DE LA COTIZACIÓN", 15, 120);
+    
+    const headers = [["#", "Descripción", "Unid.", "V. Unitario", "V. Total"]];
+    const data = itemsCotizacion.map(item => [
+        item.id,
+        item.descripcion,
+        item.unidades,
+        `$${item.valorUnitario.toFixed(2)}`,
+        `$${item.valorTotal.toFixed(2)}`
+    ]);
+    
+    doc.autoTable({
+        startY: 125,
+        head: headers,
+        body: data,
+        headStyles: {
+            fillColor: [13, 110, 253],
+            textColor: 255
+        },
+        styles: {
+            fontSize: 9
+        }
+    });
+
+    // 6. Totales
+    const finalY = doc.lastAutoTable.finalY + 15;
+    doc.setFontSize(12);
+    doc.text("RESUMEN DE VALORES", 15, finalY);
+    
+    doc.setFontSize(10);
+    doc.text(`SUBTOTAL: $${document.getElementById('subtotal').textContent}`, 150, finalY);
+    doc.text(`IVA (19%): $${document.getElementById('iva').textContent}`, 150, finalY + 5);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(13, 110, 253);
+    doc.text(`TOTAL: $${document.getElementById('total').textContent}`, 150, finalY + 10);
+
+    // 7. Condiciones
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(12);
+    doc.text("CONDICIONES", 15, finalY + 20);
+    
+    doc.setFontSize(10);
+    doc.text(`Forma de Pago: ${document.querySelector('[name="forma_pago"]').value}`, 15, finalY + 25);
+    doc.text(`Tiempo de Entrega: ${document.querySelector('[name="tiempo_entrega"]').value}`, 15, finalY + 30);
+    doc.text(`Validez: ${document.querySelector('[name="validez"]').value}`, 15, finalY + 35);
+    
+    // 8. Notas
+    const notas = document.querySelector('[name="notas"]').value;
+    if (notas) {
+        doc.text(`Notas: ${notas}`, 15, finalY + 40);
+    }
+
+    // Guardar PDF
+    const numeroCotizacion = document.querySelector('[name="numero_cotizacion"]').value || 'cotizacion';
+    doc.save(`Cotizacion_${numeroCotizacion}.pdf`);
+});
+// ===================== FIN DE LA FUNCIÓN =====================
+
+     </script>
+         <!-- Agrega esto justo antes del cierre del body -->
+       <script src="js/jspdf.umd.min.js"></script>
+    <script src="js/jspdf.plugin.autotable.min.js"></script> 
+    </body>
+</html>
